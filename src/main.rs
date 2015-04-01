@@ -21,7 +21,7 @@ fn main() {
     input.read_to_string(&mut sbuf);
 
     let value: Value = json::from_str(&sbuf).unwrap();
-    let coords = value.find("coordinates").unwrap().as_array().unwrap();
+    let coords = Arc::new(value.find("coordinates").unwrap().as_array().unwrap());
     let x = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "x"); a }));
     let y = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "y"); a }));
     let z = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "z"); a }));
@@ -33,8 +33,8 @@ fn main() {
 }
 
 #[inline(always)]
-fn read_coord_value(v: &Value, token: &str) -> f64 {
-    v.find(token).and_then(|v| v.as_f64()).unwrap()
+fn read_coord_value(v: &Value, axis: &str) -> f64 {
+    v.find(axis).and_then(|v| v.as_f64()).unwrap()
 }
 
 fn open_file<I: Iterator<Item=String>>(mut args: I) -> Option<File> {
