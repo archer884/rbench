@@ -6,8 +6,3 @@ authors = ["J/A <archer884@gmail.com>"]
 [dependencies]
 
 serde = "*"
-serde_macros = "*"
-
-[dependencies.eventual]
-
-git = "https://github.com/carllerche/eventual"

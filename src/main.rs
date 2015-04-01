@@ -1,7 +1,6 @@
 #![allow(unused)]
 extern crate serde;
-extern crate eventual;
-use eventual::{ Async, Future };
+use std::thread::scoped;
 use serde::json;
 use serde::json::Value;
 use std::fs::File;
@@ -21,15 +20,15 @@ fn main() {
     input.read_to_string(&mut sbuf);
 
     let value: Value = json::from_str(&sbuf).unwrap();
-    let coords = Arc::new(value.find("coordinates").unwrap().as_array().unwrap());
-    let x = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "x"); a }));
-    let y = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "y"); a }));
-    let z = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "z"); a }));
+    let coords = value.find("coordinates").unwrap().as_array().unwrap();
+    let x = scoped(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "x"); a }));
+    let y = scoped(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "y"); a }));
+    let z = scoped(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "z"); a }));
 
     println!("x: {}; y: {}; z: {}",
-             x.await().unwrap(),
-             y.await().unwrap(),
-             z.await().unwrap());
+             x.join(),
+             y.join(),
+             z.join());
 }
 
 #[inline(always)]
