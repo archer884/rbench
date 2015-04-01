@@ -2,11 +2,71 @@
 name = "rbench"
 version = "0.0.1"
 dependencies = [
- "rustc-serialize 0.3.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "eventual 0.0.1 (git+https://github.com/carllerche/eventual)",
+ "serde 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_macros 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
-name = "rustc-serialize"
-version = "0.3.10"
+name = "aster"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "eventual"
+version = "0.0.1"
+source = "git+https://github.com/carllerche/eventual#938fb64b3b1e470b808d1cb877c5b8d7a0b729ac"
+dependencies = [
+ "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syncbox 0.1.0 (git+https://github.com/carllerche/syncbox)",
+]
+
+[[package]]
+name = "libc"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "log"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "quasi"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "quasi_macros"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "aster 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "serde"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "serde_macros"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "aster 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quasi 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quasi_macros 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "syncbox"
+version = "0.1.0"
+source = "git+https://github.com/carllerche/syncbox#712cd3301c26b00b826044a765ef242c7590123f"
+dependencies = [
+ "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 

@@ -1,21 +1,12 @@
 #![allow(unused)]
-extern crate rustc_serialize;
-use rustc_serialize::json;
+extern crate serde;
+extern crate eventual;
+use eventual::{ Async, Future };
+use serde::json;
+use serde::json::Value;
 use std::fs::File;
 use std::io::{ BufReader, Read };
 use std::path::Path;
-
-#[derive(RustcEncodable, RustcDecodable)]
-struct Coordinate {
-    x: f64,
-    y: f64,
-    z: f64,
-}
-
-#[derive(RustcEncodable, RustcDecodable)]
-struct Wrapper {
-    coordinates: Vec<Coordinate>
-}
 
 fn main() {
     let mut input = match open_file(&mut std::env::args()) {
@@ -29,21 +20,21 @@ fn main() {
     let mut sbuf = String::new();
     input.read_to_string(&mut sbuf);
 
-    let wrapper: Wrapper = json::decode(&sbuf).unwrap();
-    let mut x = 0.0;
-    let mut y = 0.0;
-    let mut z = 0.0;
+    let value: Value = json::from_str(&sbuf).unwrap();
+    let coords = value.find("coordinates").unwrap().as_array().unwrap();
+    let x = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "x"); a }));
+    let y = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "y"); a }));
+    let z = Future::spawn(|| coords.iter().fold(0f64, |mut a,b| { a += read_coord_value(&b, "z"); a }));
 
-    for coord in &wrapper.coordinates {
-        x += coord.x;
-        y += coord.y;
-        z += coord.z;
-    }
+    println!("x: {}; y: {}; z: {}",
+             x.await().unwrap(),
+             y.await().unwrap(),
+             z.await().unwrap());
+}
 
-    let len = wrapper.coordinates.len() as f64;
-    println!("{}", x / len);
-    println!("{}", y / len);
-    println!("{}", z / len);
+#[inline(always)]
+fn read_coord_value(v: &Value, token: &str) -> f64 {
+    v.find(token).and_then(|v| v.as_f64()).unwrap()
 }
 
 fn open_file<I: Iterator<Item=String>>(mut args: I) -> Option<File> {
